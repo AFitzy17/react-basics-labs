@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import './App.css';
 import Task from './components/Task';
 import AddTaskForm from './components/Form';
+import { v4 as uuidv4 } from 'uuid';
 
 function App() {
   const [ taskState, setTaskState ] = useState({
@@ -24,6 +25,43 @@ function App() {
     setTaskState({tasks});
   } 
 
+  const [ formState, setFormState ] = useState({
+    title: "",
+    description: "",
+    deadline: ""
+  });
+
+  const formChangeHandler = (event) => {
+    let form = {...formState};
+
+    switch(event.target.name) {
+      case "title":
+          form.title = event.target.value;
+          break;
+      case "description":
+          form.description = event.target.value;
+          break;
+      case "deadline":
+          form.deadline = event.target.value;
+          break;
+      default:
+          form = formState;
+    }
+    setFormState(form);
+  }
+
+  const formSubmitHandler = (event) => {
+    event.preventDefault();
+
+    const tasks = [...taskState.tasks];
+    const form = {...formState};
+
+    form.id = uuidv4();
+    
+    tasks.push(form);
+    setTaskState({tasks});
+  }
+
   return (
     <div className="container">
     <h1>Tasky</h1>
@@ -39,7 +77,7 @@ function App() {
         deleteTask = {() => deleteHandler(index)}
       />
     ))}
-    <AddTaskForm />
+        <AddTaskForm submit={formSubmitHandler} change={formChangeHandler} />
   </div>
 
   );
